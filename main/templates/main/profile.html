@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+    <div class="container text-center mx-auto">
+        <img src="{{ user.profileimage.image.url }}" alt="profile-image" width="200" height="200"><br><br>
+        <button type="button" class="btn btn-outline-light prf-btn" data-bs-toggle="modal"
+                data-bs-target="#myImgEdit">Изменить аватар
+        </button>
+
+        <div class="modal fade" tabindex="-1" id="myImgEdit" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content mod-cont">
+                    <div class="modal-header" style="background: #1c1f23;">
+                        <h5 class="modal-title h-user">Изменение аватарки</h5>
+                    </div>
+                    <div class="modal-body edit-prf" style="background: #1c1f23;">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ pi_form.image|as_crispy_field }}
+                    </div>
+                    <div class="modal-footer" style="background: #1c1f23;">
+                        <button class="btn btn-primary" type="submit">Сохранить</button>
+                        </form>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><br>
+    <div class="container text-center profile-dark">
+        <form method="post">
+            {% csrf_token %}
+            <p>{{ user_form.username|as_crispy_field }}</p>
+            <p>{{ user_form.first_name|as_crispy_field }}</p>
+            <p>{{ user_form.last_name|as_crispy_field }}</p>
+            <p>{{ user_form.email|as_crispy_field }}</p>
+            <p>{{ pn_form|crispy }}</p>
+            <button type="submit" class="btn btn-outline-success">Сохранить</button>
+        </form>
+
+    </div>
+{% endblock %}
