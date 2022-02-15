@@ -25,13 +25,20 @@
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav ms-auto m-3">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}"
-                       style="font-family: 'JetBrains Mono'">РЕГИСТРАЦИЯ</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login-user' %}" style="font-family: 'JetBrains Mono'">ВХОД</a>
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"
+                           style="font-family: 'JetBrains Mono'">Перейти на домашнюю страницу</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}"
+                           style="font-family: 'JetBrains Mono'">РЕГИСТРАЦИЯ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login-user' %}" style="font-family: 'JetBrains Mono'">ВХОД</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -41,13 +48,13 @@
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <img src="{% static 'main/img/logo.png' %}" style="width: 350px;"><br><br>
-            <p class="intro-text" style="font-family: 'Fira Mono', monospace;">Lorem Ipsum is simply dummy text of the
-                printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since
-                the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                It has survived not only five centuries, but also the leap into electronic typesetting, remaining
-                essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing
-                Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including
-                versions of Lorem Ipsum.</p>
+            <p class="intro-text" style="font-family: 'Fira Mono', monospace;">Lorem Ipsum - это текст-"рыба", часто
+                используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с
+                начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов,
+                используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных
+                изменений пять веков, но и перешагнул в электронный дизайн. Его популяризации в новое время послужили
+                публикация листов Letraset с образцами Lorem Ipsum в 60-х годах и, в более недавнее время, программы
+                электронной вёрстки типа Aldus PageMaker, в шаблонах которых используется Lorem Ipsum.</p>
         </div>
     </div>
 </div>

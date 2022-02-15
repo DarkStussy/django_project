@@ -22,7 +22,8 @@
 <body style="background: rgb(40,45,50);">
 <nav class="navbar navbar-light navbar-expand-lg navigation-clean"
      style="background: rgba(40,45,50,0.87);color: rgb(255,255,255);font-family: 'B612 Mono', monospace;">
-    <div class="container"><a class="navbar-brand" href="{% url 'home' %}" style="font-family: Cabin, sans-serif;">ЭЦФО</a>
+    <div class="container"><a class="navbar-brand" href="{% url 'home' %}"
+                              style="font-family: Cabin, sans-serif;">ЭЦФО</a>
         <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span
                 class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navcol-1">
@@ -36,8 +37,16 @@
                 <li class="nav-item"><a class="nav-link" href="#" style="font-family: 'JetBrains Mono', monospace;">Оценка
                     недвижимости</a></li>
             </ul>
-            <a href="{% url 'profile' %}" class="btn btn-outline-light border rounded-pill" role="button"
-               style="font-family: 'JetBrains Mono', monospace;">Мой профиль</a>
+            {% if user.is_authenticated %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}"
+                                            style="font-family: 'JetBrains Mono', monospace;color: rgb(255,255,255);">Мой профиль</a>
+                    </li>
+                    <li class="nav-item"><a class="btn btn-outline-light rounded" href="{% url 'logout' %}" style="font-family: 'JetBrains Mono', monospace;">Выйти</a>
+
+                </ul>
+            {% endif %}
         </div>
     </div>
 </nav>
