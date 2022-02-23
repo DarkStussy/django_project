@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Удаление строки из {% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <form method="post">
+            {% csrf_token %}
+            <h2>Вы действительно хотите удалить эту строку из таблицы?</h2>
+            <button type="submit" class="btn btn-danger rounded">Удалить</button>
+            <a href="{% url 'show-rent-estimates' re_model.id %}" class="btn btn-secondary rounded">Назад</a>
+        </form>
+    </div>
+{% endblock %}

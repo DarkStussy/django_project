@@ -1,9 +1,180 @@
 {% extends 'main/base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Домашняя страница{% endblock %}
 
 {% block content %}
-    <div class="container text-center">
-        <h1>HELLO</h1>
+    <div class="container-fluid p-lg-5">
+        {% if perms.main.view_task %}
+            <div class="row">
+                <div class="col col-table">
+                    <div class="card bg-dark text-white main-card">
+                        <div class="card-body">Задачи</div>
+                        <table class="table table-dark">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Наименование задачи</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks %}
+                                {% if not task.is_done %}
+                                    <tr>
+                                        {% if task.user %}
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td><a href="{% url 'detail-task' task.id %}"
+                                                   style="color: white">{{ task.title }}</a></td>
+                                            <td>
+                                                <small style="color: lightsalmon;">Выполняет {{ task.user }}</small>
+                                            </td>
+                                        {% else %}
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td><a href="{% url 'detail-task' task.id %}"
+                                                   style="color: white">{{ task.title }}</a></td>
+                                            <td>
+                                                <small style="color: lightsalmon;">Не выполнено</small>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col col-table">
+                    <div class="card bg-dark text-white main-card">
+                        <div class="card-body">Выполненные задачи</div>
+                        <table class="table table-dark">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Наименование задачи</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks %}
+                                {% if task.is_done %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td><a href="{% url 'detail-task' task.id %}"
+                                               style="color: white">{{ task.title }}</a></td>
+                                        <td style="color: lightgreen;">Выполнено | {{ task.user }}</td>
+                                    </tr>
+                                {% elif task.mark_done %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td><a href="{% url 'detail-task' task.id %}"
+                                               style="color: white">{{ task.title }}</a></td>
+                                        <td style="color: orange;">В ожидании проверки | {{ task.user }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col col-table">
+                    <div class="card bg-dark text-white main-card">
+                        <div class="card-body">Задачи</div>
+                        <table class="table table-dark">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Наименование задачи</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks %}
+                                {% if not task.is_done %}
+                                    <tr>
+                                        {% if not task.user %}
+                                            <th scope="row">{{ forloop.counter }}</th>
+                                            <td>{{ task.title }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-success rounded"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#confirm{{ task.title }}">Выполнить
+                                                </button>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% if not task.user %}
+                                        <div class="modal fade" tabindex="-1" id="confirm{{ task.title }}"
+                                             role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content mod-cont">
+                                                    <div class="modal-header" style="background: #1c1f23;">
+                                                        <h5 class="modal-title h-user">Подтверждение</h5>
+                                                    </div>
+                                                    <div class="modal-body edit-prf" style="background: #1c1f23;">
+                                                        <form method="post" action="{% url 'detail-task' task.id %}">
+                                                            {% csrf_token %}
+                                                            <p>Вы действительно хотите взять
+                                                                задание {{ task.title }}?</p>
+                                                    </div>
+                                                    <div class="modal-footer" style="background: #1c1f23;">
+                                                        <button class="btn btn-primary" type="submit">Да</button>
+                                                        </form>
+                                                        <button type="button" class="btn btn-danger"
+                                                                data-bs-dismiss="modal">
+                                                            Закрыть
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col col-table">
+                    <div class="card bg-dark text-white main-card">
+                        <div class="card-body">Мои задачи</div>
+                        <table class="table table-dark">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Наименование задачи</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for task in tasks %}
+                                {% if task.user == request.user %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td><a href="{% url 'detail-task' task.id %}"
+                                               style="color: white">{{ task.title }}</a></td>
+                                        {% if task.is_done %}
+                                            <td style="color: lightgreen;">
+                                                Выполнено
+                                            </td>
+                                        {% elif task.mark_done %}
+                                            <td style="color: lightsalmon;">В ожидании проверки
+                                            </td>
+                                        {% else %}
+                                            <td style="color: lightsalmon;">Выполняется
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

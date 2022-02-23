@@ -1,12 +1,23 @@
+import math
+from random import randint
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.shortcuts import render, redirect
+from django.core.mail import send_mail, BadHeaderError
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
+from datetime import date
+from statistics import pstdev
 
 # auth
-from main.forms import UserRegistrationForm, UserForm, ProfileUpdateImageForm, ProfileUpdatePNumberForm
-from main.models import ProfileImage, Profile
+from django.urls import reverse
+
+from django_project.settings import DEFAULT_FROM_EMAIL
+from .forms import UserRegistrationForm, UserForm, ProfileUpdateImageForm, ProfileUpdatePNumberForm, \
+    BasicDataForm
+from .models import ProfileImage, Profile, Task, Doc, DocsImage, OtherDoc, ObjectDoc, CustomerDoc, BasicDataModel, \
+    BasicData, RentEstimateModel, RentEstimate1, CharacteristicsRE1
 
 
 def login_user(request):
@@ -41,7 +52,7 @@ def register(request):
     return render(request, 'main/register.html', {'user_form': user_form})
 
 
-@login_required
+@login_required(login_url='/accounts/loginuser/')
 def profile(request):
     if request.method == "POST":
         user_form = UserForm(request.POST, instance=request.user)
@@ -72,6 +83,260 @@ def main(request):
     return render(request, 'main/main.html')
 
 
-@login_required
+@login_required(login_url='/accounts/loginuser/')
 def home(request):
-    return render(request, 'main/home.html')
+    tasks = Task.objects.all()
+    return render(request, 'main/home.html', {'tasks': tasks})
+
+
+@login_required(login_url='/accounts/loginuser/')
+def detail_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+
+    if request.method == 'POST':
+        if task.user is None:
+            task.user = request.user
+            task.save()
+            return HttpResponseRedirect(reverse('detail-task', args=(task_id,)))
+
+        if request.user.has_perm('main.view_task'):
+            task.is_done = True
+            task.save()
+            messages.success(request, 'Задача проверена и отмечена выполненной')
+            return redirect('home')
+        else:
+            task.mark_done = True
+            task.save()
+            messages.success(request, 'Задача отмечена выполненной')
+            return redirect('home')
+
+    if task.user != request.user and not request.user.has_perm('main.view_task'):
+        messages.error(request, 'Задача уже выполняется кем-то!')
+        return redirect('home')
+
+    return render(request, 'main/detail_task.html', {'task': task})
+
+
+@login_required(login_url='/accounts/loginuser/')
+def docs_view(request):
+    docs = Doc.objects.all()
+    return render(request, 'main/docs.html', {'docs': docs})
+
+
+@login_required(login_url='/accounts/loginuser/')
+def detail_docs(request, docs_id):
+    doc = get_object_or_404(Doc, pk=docs_id)
+    images = DocsImage.objects.filter(doc=doc).all()
+    c_docs = CustomerDoc.objects.filter(doc=doc).all()
+    other_docs = OtherDoc.objects.filter(doc=doc).all()
+    obj_docs = ObjectDoc.objects.filter(doc=doc).all()
+
+    doc.is_filled = all([images, c_docs, other_docs, obj_docs])
+    doc.save()
+
+    if request.method == 'POST':
+        images_ = request.FILES.getlist('image_field')
+        c_docs_ = request.FILES.getlist('customer_docs_field')
+        other_docs_ = request.FILES.getlist('other_docs_field')
+        obj_docs_ = request.FILES.getlist('objects_field')
+        if images_:
+            for image in images_:
+                image_model = DocsImage.objects.create(doc=doc, image_field=image)
+                image_model.save()
+            messages.success(request, 'Фотографии загружены!')
+        elif c_docs_:
+            for c_doc in c_docs_:
+                c_doc_model = CustomerDoc.objects.create(doc=doc, file_field=c_doc)
+                c_doc_model.save()
+            messages.success(request, 'Документы заказчика загружены!')
+        elif other_docs_:
+            for o_doc in other_docs_:
+                o_doc_model = OtherDoc.objects.create(doc=doc, file_field=o_doc)
+                o_doc_model.save()
+            messages.success(request, 'Иные документы загружены!')
+        elif obj_docs_:
+            for obj_doc in obj_docs_:
+                obj_doc_model = ObjectDoc.objects.create(doc=doc, file_field=obj_doc)
+                obj_doc_model.save()
+            messages.success(request, 'Объекты-аналоги загружены!')
+
+        return HttpResponseRedirect(reverse('detail-docs', args=(docs_id,)))
+
+    return render(request, 'main/detail_docs.html',
+                  {'doc': doc, 'images': images, 'c_docs': c_docs, 'other_docs': other_docs, 'obj_docs': obj_docs})
+
+
+@login_required(login_url='/accounts/loginuser/')
+def delete_docs_images(request, docs_id):
+    doc = get_object_or_404(Doc, pk=docs_id)
+    if (doc.task.user == request.user) or request.user.has_perm('main.view_task'):
+        DocsImage.objects.filter(doc=doc).delete()
+        return HttpResponseRedirect(reverse('detail-docs', args=(docs_id,)))
+    else:
+        raise PermissionError
+
+
+@login_required(login_url='/accounts/loginuser/')
+def delete_docs_customer(request, docs_id):
+    doc = get_object_or_404(Doc, pk=docs_id)
+    if (doc.task.user == request.user) or request.user.has_perm('main.view_task'):
+        CustomerDoc.objects.filter(doc=doc).delete()
+        return HttpResponseRedirect(reverse('detail-docs', args=(docs_id,)))
+    else:
+        raise PermissionError
+
+
+@login_required(login_url='/accounts/loginuser/')
+def delete_docs_other(request, docs_id):
+    doc = get_object_or_404(Doc, pk=docs_id)
+    if (doc.task.user == request.user) or request.user.has_perm('main.view_task'):
+        OtherDoc.objects.filter(doc=doc).delete()
+        return HttpResponseRedirect(reverse('detail-docs', args=(docs_id,)))
+    else:
+        raise PermissionError
+
+
+def delete_docs_obj(request, docs_id):
+    doc = get_object_or_404(Doc, pk=docs_id)
+    if (doc.task.user == request.user) or request.user.has_perm('main.view_task'):
+        doc = get_object_or_404(Doc, pk=docs_id)
+        ObjectDoc.objects.filter(doc=doc).delete()
+        return HttpResponseRedirect(reverse('detail-docs', args=(docs_id,)))
+    else:
+        raise PermissionError
+
+
+@login_required(login_url='/accounts/loginuser/')
+def help_view(request):
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        try:
+            send_mail(f'{subject} от {DEFAULT_FROM_EMAIL}', message,
+                      DEFAULT_FROM_EMAIL, [f'{request.user.email}'])
+        except BadHeaderError:
+            messages.error(request, 'Ошибка в теме письма.')
+
+        messages.success(request,
+                         'Сообщение успешно отправлено техподдержке. В скором времени поступит ответ на вашу почту.')
+        return redirect('home')
+    else:
+        return render(request, 'main/help.html')
+
+
+@login_required(login_url='/accounts/loginuser/')
+def show_basic_data(request):
+    basic_data = BasicDataModel.objects.all()
+    return render(request, 'main/basic_data.html', {'basic_data': basic_data})
+
+
+@login_required(login_url='/accounts/loginuser/')
+def detail_basic_data(request, d_id):
+    bd_model = get_object_or_404(BasicDataModel, pk=d_id)
+    if (bd_model.task.user == request.user) or request.user.has_perm('main.view_task'):
+        if not bd_model.is_filled:
+            if request.method == 'POST':
+                bd_form = BasicDataForm(request.POST, request.FILES)
+                if bd_form.is_valid():
+                    bd_form.save()
+                    bd_model = get_object_or_404(BasicDataModel, pk=d_id)
+                    bd_model.is_filled = True
+                    bd_model.save()
+                    messages.success(request, 'Форма успешно заполнена!')
+                    return redirect('show-basic-data')
+                else:
+                    messages.error(request, 'Форма неверно заполнена!')
+                    return redirect('show-basic-data')
+
+            bd_form = BasicDataForm(initial={'bd_model': bd_model})
+            return render(request, 'main/detail_basic_data.html',
+                          {'bd_form': bd_form})
+        else:
+            basic_data = BasicData.objects.filter(bd_model=bd_model).last()
+            return render(request, 'main/detail_bd_filled.html', {'basic_data': basic_data})
+    else:
+        raise PermissionError
+
+
+def main_rent_estimates(request):
+    re_model = RentEstimateModel.objects.all()
+    return render(request, 'main/main_rent_estimates.html', {'re_model': re_model})
+
+
+def show_rent_estimates(request, re_id):
+    re_model = get_object_or_404(RentEstimateModel, pk=re_id)
+    characteristics_t1 = CharacteristicsRE1.objects.filter(re_model=re_model).last()
+    tables1 = RentEstimate1.objects.filter(re_model=re_model).all()
+
+    if request.method == 'POST':
+        location = request.POST.get('location')
+        area = request.POST.get('area')
+        price = request.POST.get('price')
+        info_resource = request.POST.get('info_resource')
+        if location and area and price and info_resource:
+            offer_price = round(float(price) / float(area), 2)
+            rent_estimate1 = RentEstimate1.objects.create(re_model=re_model, location=location, area=area, price=price,
+                                                          offer_price=offer_price, info_resource=info_resource,
+                                                          date=date.today(), ad_number=randint(0, 1000))
+            rent_estimate1.save()
+
+            calculate_characteristics(tables1, characteristics_t1)
+
+            messages.success(request, 'Таблица заполнена!')
+            return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+        else:
+            messages.error(request, 'Поля неверно заполнены!')
+            return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+
+    return render(request, 'main/rent_estimate.html',
+                  {'re_model': re_model, 'tables1': tables1, 'characteristics_t1': characteristics_t1})
+
+
+def delete_tables(request, re_id, table_id):
+    re_model = get_object_or_404(RentEstimateModel, pk=re_id)
+    characteristics_t1 = CharacteristicsRE1.objects.filter(re_model=re_model).last()
+    tables1 = RentEstimate1.objects.filter(re_model=re_model).all()
+
+    if request.method == 'POST':
+        table = get_object_or_404(RentEstimate1, pk=table_id)
+        table.delete()
+        calculate_characteristics(tables1, characteristics_t1)
+        return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+
+    return render(request, 'main/delete_tables.html', {'re_model': re_model})
+
+
+def calculate_characteristics(tables, characteristics_t):
+    offer_prices = [el.offer_price for el in tables]
+    if len(offer_prices) == 0:
+        characteristics_t.least_offer_price = 0
+        characteristics_t.greatest_offer_price = 0
+        characteristics_t.mid_range = 0
+        characteristics_t.average = 0
+        characteristics_t.median = 0
+        characteristics_t.standard_deviation = 0
+        characteristics_t.coefficient_variation = 0
+        characteristics_t.save()
+    else:
+        characteristics_t.least_offer_price = min(offer_prices)
+        characteristics_t.greatest_offer_price = max(offer_prices)
+        characteristics_t.mid_range = (min(offer_prices) + max(offer_prices)) / 2.0
+        characteristics_t.average = sum(offer_prices) / len(offer_prices)
+
+        n = len(offer_prices)
+        index = n // 2
+        if n % 2:
+            characteristics_t.median = sorted(offer_prices)[index]
+        else:
+            characteristics_t.median = sum(sorted(offer_prices)[index - 1:index + 1]) / 2
+
+        st_dev = 0
+        if len(offer_prices) > 1:
+            mean = sum(offer_prices) / len(offer_prices)
+            var = sum((i - mean) ** 2 for i in offer_prices) / (len(offer_prices) - 1)
+            st_dev = math.sqrt(var)
+
+        characteristics_t.standard_deviation = round(st_dev, 2)
+        characteristics_t.coefficient_variation = round(st_dev / (sum(offer_prices) / len(offer_prices)), 2)
+        characteristics_t.save()

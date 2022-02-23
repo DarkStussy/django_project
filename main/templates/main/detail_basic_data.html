@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Основные данные{% endblock %}
+
+{% block content %}
+    <div class="container text-center profile-dark">
+        <form method="post" id="myform" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ bd_form.bd_model }}
+            {{ bd_form.report_number|as_crispy_field }}
+            {{ bd_form.name_report|as_crispy_field }}
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="leg_form" type="checkbox" data-bs-toggle="collapse" data-bs-target="#legform">
+                <label class="form-check-label" for="mySwitch" style="font-family: 'JetBrains Mono'">Юридическое лицо</label>
+            </div><br>
+            <div id="legform" class="collapse">
+                {{ bd_form.org_legal_form|as_crispy_field }}
+                {{ bd_form.full_name|as_crispy_field }}
+                {{ bd_form.OGRN|as_crispy_field }}
+                {{ bd_form.date_assignment_OGRN|as_crispy_field }}
+                {{ bd_form.location_leg|as_crispy_field }}
+            </div><br>
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="ind_form" type="checkbox" data-bs-toggle="collapse" data-bs-target="#indform">
+                <label class="form-check-label" for="mySwitch" style="font-family: 'JetBrains Mono'">Физическое лицо</label>
+            </div><br>
+            <div id="indform" class="collapse">
+                {{ bd_form.last_name|as_crispy_field }}
+                {{ bd_form.first_name|as_crispy_field }}
+                {{ bd_form.mid_name|as_crispy_field }}
+                {{ bd_form.identity_document|as_crispy_field }}
+                {{ bd_form.location_ind|as_crispy_field }}
+            </div><br>
+
+            {{ bd_form.date_report|as_crispy_field }}
+            {{ bd_form.basis_for_evaluation|as_crispy_field }}
+            {{ bd_form.object_of|as_crispy_field }}
+            {{ bd_form.composition|as_crispy_field }}
+            {{ bd_form.purpose|as_crispy_field }}
+            {{ bd_form.use_obj|as_crispy_field }}
+            {{ bd_form.price_type|as_crispy_field }}
+            {{ bd_form.date_rent_estimate|as_crispy_field }}
+            {{ bd_form.date_inspection|as_crispy_field }}
+            {{ bd_form.range_limits|as_crispy_field }}
+            {{ bd_form.documents|as_crispy_field }}
+
+            <button type="submit" class="btn btn-success rounded">Сохранить</button>
+        </form>
+    </div>
+{% endblock %}

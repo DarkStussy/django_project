@@ -1,0 +1,182 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %}Документы{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-sm-6 p-5">
+                <div class="card bg-dark text-white docs-card">
+                    <div class="card-header">Фотографии объекта оценки</div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for image in images %}
+                                {% if image %}
+                                    <div class="col-sm-6" style="padding: 5px;">
+                                        <a href="{{ image.image_field.url }}"><img src="{{ image.image_field.url }}"
+                                                                                   width="198"
+                                                                                   height="198"></a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-secondary rounded" data-bs-toggle="modal"
+                                data-bs-target="#ImgUpload">Загрузить
+                        </button>
+                        <a href="{% url 'delete-imgs-docs' doc.id %}" class="btn btn-danger rounded">Удалить
+                            фотографии</a>
+
+                        <div class="modal fade" tabindex="-1" id="ImgUpload" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #1c1f23;">
+                                        <h5 class="modal-title">Загрузка фотографий</h5>
+                                    </div>
+                                    <div class="modal-body" style="background: #1c1f23;">
+                                        <form method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="file" name="image_field" class="form-control"
+                                                   accept=".jpg, .jpeg, .png" multiple>
+                                    </div>
+                                    <div class="modal-footer" style="background: #1c1f23;">
+                                        <button class="btn btn-primary rounded" type="submit">Загрузить</button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger rounded" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 p-5">
+                <div class="card bg-dark text-white docs-card">
+                    <div class="card-header">Документы заказчика</div>
+                    <div class="card-body">
+                        {% for c_doc in c_docs %}
+                            <a href="{{ c_doc.file_field.url }}" title="{{ c_doc.file_field.name }}"><img
+                                    src="{% static 'main/img/file_img.png' %}" width="50" height="50"></a>
+                        {% endfor %}
+                        <br><br>
+                        <button type="button" class="btn btn-secondary rounded" data-bs-toggle="modal"
+                                data-bs-target="#CustomDoc">Загрузить
+                        </button>
+                        <a href="{% url 'delete-cstm-docs' doc.id %}" class="btn btn-danger rounded">Удалить
+                            документы заказчика</a>
+
+                        <div class="modal fade" tabindex="-1" id="CustomDoc" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #1c1f23;">
+                                        <h5 class="modal-title">Загрузка документов заказчика</h5>
+                                    </div>
+                                    <div class="modal-body" style="background: #1c1f23;">
+                                        <form method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="file" name="customer_docs_field" class="form-control" multiple>
+                                    </div>
+                                    <div class="modal-footer" style="background: #1c1f23;">
+                                        <button class="btn btn-primary rounded" type="submit">Загрузить</button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger rounded" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 p-5">
+                <div class="card bg-dark text-white docs-card">
+                    <div class="card-header">Иные документы</div>
+                    <div class="card-body">
+                        {% for o_doc in other_docs %}
+                            <a href="{{ o_doc.file_field.url }}" title="{{ o_doc.file_field }}"><img
+                                    src="{% static 'main/img/file_img.png' %}" width="50" height="50"
+                                    style="color: lightgray"></a>
+                        {% endfor %}
+                        <br><br>
+                        <button type="button" class="btn btn-secondary rounded" data-bs-toggle="modal"
+                                data-bs-target="#OtherDoc">Загрузить
+                        </button>
+                        <a href="{% url 'delete-other-docs' doc.id %}" class="btn btn-danger rounded">Удалить
+                            иные документы</a>
+
+                        <div class="modal fade" tabindex="-1" id="OtherDoc" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #1c1f23;">
+                                        <h5 class="modal-title">Загрузка иных документов</h5>
+                                    </div>
+                                    <div class="modal-body" style="background: #1c1f23;">
+                                        <form method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="file" name="other_docs_field" class="form-control" multiple>
+                                    </div>
+                                    <div class="modal-footer" style="background: #1c1f23;">
+                                        <button class="btn btn-primary rounded" type="submit">Загрузить</button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger rounded" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 p-5">
+                <div class="card bg-dark text-white docs-card">
+                    <div class="card-header">Объекты-аналоги</div>
+                    <div class="card-body">
+                        {% for obj_doc in obj_docs %}
+                            <a href="{{ obj_doc.file_field.url }}" title="{{ obj_doc.file_field }}">
+                                <img src="{% static 'main/img/file_img.png' %}" width="50" height="50"
+                                     style="color: lightgray">
+                            </a>
+                        {% endfor %}
+                        <br><br>
+                        <button type="button" class="btn btn-secondary rounded" data-bs-toggle="modal"
+                                data-bs-target="#ObjDoc">Загрузить
+                        </button>
+                        <a href="{% url 'delete-obj-docs' doc.id %}" class="btn btn-danger rounded">Удалить
+                            объекты-аналоги</a>
+
+                        <div class="modal fade" tabindex="-1" id="ObjDoc" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="background: #1c1f23;">
+                                        <h5 class="modal-title">Загрузка объектов-аналогов</h5>
+                                    </div>
+                                    <div class="modal-body" style="background: #1c1f23;">
+                                        <form method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <input type="file" name="objects_field" class="form-control"
+                                                   accept=".jpg, .png, .bmp" multiple>
+                                    </div>
+                                    <div class="modal-footer" style="background: #1c1f23;">
+                                        <button class="btn btn-primary rounded" type="submit">Загрузить</button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger rounded" data-bs-dismiss="modal">
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

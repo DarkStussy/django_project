@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="container text-center profile-dark">
+        <p>Форма отправки сообщения техподдержке</p>
+        <form method="post">
+            {% csrf_token %}
+            <input class="form-control" type="text" name="subject" placeholder="Тема" required><br>
+            <textarea placeholder="Сообщение" name="message" class="form-control" required></textarea><br><br>
+            <button type="submit" class="btn btn-light rounded">Отправить</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Основные данные{% endblock %}
+
+{% block content %}
+    <div class="container text-center" style="font-family: 'JetBrains Mono'">
+        <h3>{{ basic_data.bd_model.task.title }}</h3>
+        <p>Название отчета об оценке: {{ basic_data.name_report }} </p>
+        <p>Номер отчета об оценке: {{ basic_data.report_number }} </p>
+        {% if basic_data.org_legal_form and basic_data.full_name and basic_data.OGRN and basic_data.date_assignment_OGRN and basic_data.location_leg %}
+            <p>Заказчик:</p>
+            <p>Организационно правовая форма: {{ basic_data.org_legal_form }} </p>
+            <p>Полное наименование: {{ basic_data.full_name }} </p>
+            <p>ОГРН: {{ basic_data.OGRN }} </p>
+            <p>Дата присвоения ОГРН: {{ basic_data.date_assignment_OGRN }} </p>
+            <p>Адрес места нахождения: {{ basic_data.location_leg }} </p>
+        {% else %}
+            <p>Заказчик:</p>
+            <p>Фамилия: {{ basic_data.last_name }} </p>
+            <p>Имя: {{ basic_data.first_name }} </p>
+            <p>Отчество: {{ basic_data.mid_name }} </p>
+            <p>Удостоверение личности: </p>
+            <a href="{{ basic_data.identity_document.url }}"><img src="{{ basic_data.identity_document.url }}" width="300" height="150"></a>
+            <p>Адрес места нахождения: {{ basic_data.location_ind }} </p>
+        {% endif %}
+        <p>Дата составления отчета: {{ basic_data.date_report }} </p>
+        <p>Основание для проведения оценки: {{ basic_data.basis_for_evaluation }} </p>
+        <p>Объект оценки: {{ basic_data.object_of }} </p>
+        <p>Состав объекта оценки: {{ basic_data.composition }} </p>
+        <p>Цель оценки: {{ basic_data.purpose }}</p>
+        <p>Предполагаемое использование объекта оценки: {{ basic_data.use_obj }}</p>
+        <p>Вид стоимости: {{ basic_data.price_type }}</p>
+        <p>Дата оценки: {{ basic_data.date_rent_estimate }}</p>
+        <p>Дата обследования объекта оценки: {{ basic_data.date_inspection }}</p>
+        <p>Границы диапазона РС: {{ basic_data.range_limits }}</p>
+    </div>
+{% endblock %}

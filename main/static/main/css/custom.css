@@ -3,12 +3,76 @@
     margin: 0 auto;
 }
 
+.table {
+    width: 600px;
+}
+
+.main-card {
+    width: 600px;
+    text-align: center;
+    font-family: "JetBrains Mono";
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.docs-card {
+    font-family: "JetBrains Mono";
+}
+
 .profile-dark form .form-control {
-  background: none;
-  border: none;
-  border-bottom: 1px solid #434a52;
-  border-radius: 0;
-  box-shadow: none;
-  outline: none;
-  color: inherit;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #434a52;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    color: inherit;
+}
+
+.images {
+    width: 400px;
+}
+
+.dynamic_fields, .dynamic_fields * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.title_doc {
+    display: none;
+}
+
+.pull-right {
+    float: right;
+}
+
+.table {
+    display: table;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.student:last-child .table {
+    padding-bottom: 0;
+}
+
+.table .cell {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.table .cell:last-child {
+    width: 1px;
+    padding-left: 10px;
+}
+
+@media (max-width: 600px) {
+    .main-card {
+        width: 300px;
+    }
+
+    .table {
+        width: 300px;
+    }
 }

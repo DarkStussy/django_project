@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin:700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=JetBrains+Mono&amp;display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="{% static 'main/css/Footer-Dark.css' %}">
     <link rel="stylesheet" href="{% static 'main/css/Navigation-Clean.css' %}">
@@ -29,13 +29,15 @@
         <div class="collapse navbar-collapse" id="navcol-1">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"></li>
-                <li class="nav-item"><a class="nav-link" href="#"
+                <li class="nav-item"><a class="nav-link" href="{% url 'docs-view' %}"
                                         style="font-family: 'JetBrains Mono', monospace;color: rgb(255,255,255);">Документы</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#" style="font-family: 'JetBrains Mono', monospace;">Помощь</a>
+                <li class="nav-item"><a class="nav-link" href="{% url 'help' %}" style="font-family: 'JetBrains Mono', monospace;">Помощь</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#" style="font-family: 'JetBrains Mono', monospace;">Оценка
-                    недвижимости</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'show-basic-data' %}" style="font-family: 'JetBrains Mono', monospace;">Основные данные
+                    </a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'main-rent-estimates' %}" style="font-family: 'JetBrains Mono', monospace;">Оценка
+                    арендной платы</a></li>
             </ul>
             {% if user.is_authenticated %}
                 <ul class="navbar-nav ms-auto">
@@ -55,13 +57,14 @@
     <div class="container">
         <div class="row">
             <div class="col item social"><a href="#"><i class="icon ion-social-facebook"></i></a><a href="#"><i
-                    class="icon ion-social-twitter"></i></a><a href="#"><i class="icon ion-social-snapchat"></i></a><a
+                    class="icon ion-social-twitter"></i></a><a
                     href="#"><i class="icon ion-social-instagram"></i></a></div>
         </div>
-        <p class="copyright">Company Name © 2022</p>
+        <p class="copyright">ЭЦФО © 2022</p>
     </div>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'main/js/add_inputs.js' %}"></script>
 </body>
 
 </html>
