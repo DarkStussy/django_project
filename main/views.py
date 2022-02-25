@@ -8,7 +8,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.mail import send_mail, BadHeaderError
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from datetime import date
-from statistics import pstdev
 
 # auth
 from django.urls import reverse
@@ -17,7 +16,7 @@ from django_project.settings import DEFAULT_FROM_EMAIL
 from .forms import UserRegistrationForm, UserForm, ProfileUpdateImageForm, ProfileUpdatePNumberForm, \
     BasicDataForm
 from .models import ProfileImage, Profile, Task, Doc, DocsImage, OtherDoc, ObjectDoc, CustomerDoc, BasicDataModel, \
-    BasicData, RentEstimateModel, RentEstimate1, CharacteristicsRE1
+    BasicData, RentEstimateModel, RentEstimate1, CharacteristicsRE1, RentEstimate2
 
 
 def login_user(request):
@@ -264,7 +263,7 @@ def main_rent_estimates(request):
     return render(request, 'main/main_rent_estimates.html', {'re_model': re_model})
 
 
-def show_rent_estimates(request, re_id):
+def show_rent_estimate1(request, re_id):
     re_model = get_object_or_404(RentEstimateModel, pk=re_id)
     characteristics_t1 = CharacteristicsRE1.objects.filter(re_model=re_model).last()
     tables1 = RentEstimate1.objects.filter(re_model=re_model).all()
@@ -280,17 +279,87 @@ def show_rent_estimates(request, re_id):
                                                           offer_price=offer_price, info_resource=info_resource,
                                                           date=date.today(), ad_number=randint(0, 1000))
             rent_estimate1.save()
+            rent_estimate2 = RentEstimate2.objects.filter(re_model=re_model).all()
+            rent_estimate2.delete()
+            re_model.is_filled = False
+            re_model.save()
 
             calculate_characteristics(tables1, characteristics_t1)
 
             messages.success(request, 'Таблица заполнена!')
-            return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+            return HttpResponseRedirect(reverse('show-rent-estimate1', args=(re_id,)))
         else:
             messages.error(request, 'Поля неверно заполнены!')
-            return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+            return HttpResponseRedirect(reverse('show-rent-estimate1', args=(re_id,)))
 
-    return render(request, 'main/rent_estimate.html',
+    return render(request, 'main/rent_estimate1.html',
                   {'re_model': re_model, 'tables1': tables1, 'characteristics_t1': characteristics_t1})
+
+
+def show_rent_estimate2(request, re_id):
+    re_model = get_object_or_404(RentEstimateModel, pk=re_id)
+    tables1 = RentEstimate1.objects.filter(re_model=re_model).all()
+    tables2 = RentEstimate2.objects.filter(re_model=re_model).all()
+    amount_tables1 = tables1.all().count() + 1
+
+    if request.method == 'POST':
+        for counter in range(1, tables1.count() + 1):
+            transferable_property_rights = request.POST.get(f't_p_rights{counter}')
+            financing_conditions = request.POST.get(f'financing_conditions{counter}')
+            terms_of_sale = request.POST.get(f'terms_of_sale{counter}')
+            price_change = request.POST.get(f'price_change{counter}')
+            bargain_discount = request.POST.get(f'bargain_discount{counter}')
+            type_of_use = request.POST.get(f'type_of_use{counter}')
+            locality_status = request.POST.get(f'locality_status{counter}')
+            location_within_city = request.POST.get(f'location_within_city{counter}')
+            location_relative_to_red_line = request.POST.get(f'location_relative_to_red_line{counter}')
+            proximity_public_transport = request.POST.get(f'proximity_public_transport{counter}')
+            parking_type = request.POST.get(f'parking_type{counter}')
+            object_access = request.POST.get(f'object_access{counter}')
+            area_category = request.POST.get(f'area_category{counter}')
+            object_type = request.POST.get(f'object_type{counter}')
+            level = request.POST.get(f'level{counter}')
+            separate_entrance = request.POST.get(f'separate_entrance{counter}')
+            object_quality_class = request.POST.get(f'object_quality_class{counter}')
+            object_state = request.POST.get(f'object_state{counter}')
+            finish_condition = request.POST.get(f'finish_condition{counter}')
+            economic_characteristics = request.POST.get(f'economic_characteristics{counter}')
+            movable_property = request.POST.get(f'movable_property{counter}')
+            other_characteristics = request.POST.get(f'other_characteristics{counter}')
+
+            rent_estimate2 = RentEstimate2.objects.create(re_model=re_model,
+                                                          rent_estimate1=tables1[counter - 1],
+                                                          transferable_property_rights=transferable_property_rights,
+                                                          financing_conditions=financing_conditions,
+                                                          terms_of_sale=terms_of_sale,
+                                                          price_change=price_change,
+                                                          bargain_discount=bargain_discount,
+                                                          type_of_use=type_of_use,
+                                                          locality_status=locality_status,
+                                                          location_within_city=location_within_city,
+                                                          location_relative_to_red_line=location_relative_to_red_line,
+                                                          proximity_public_transport=proximity_public_transport,
+                                                          parking_type=parking_type,
+                                                          object_access=object_access,
+                                                          area_category=area_category,
+                                                          object_type=object_type,
+                                                          level=level,
+                                                          separate_entrance=separate_entrance,
+                                                          object_quality_class=object_quality_class,
+                                                          object_state=object_state,
+                                                          finish_condition=finish_condition,
+                                                          economic_characteristics=economic_characteristics,
+                                                          movable_property=movable_property,
+                                                          other_characteristics=other_characteristics
+                                                          )
+            rent_estimate2.save()
+        re_model.is_filled = True
+        re_model.save()
+        messages.success(request, 'Таблица заполнена!')
+        return HttpResponseRedirect(reverse('show-rent-estimate2', args=(re_id,)))
+
+    return render(request, 'main/rent_estimate2.html',
+                  {'re_model': re_model, 'tables1': tables1, 'tables2': tables2, 'amount_tables1': amount_tables1})
 
 
 def delete_tables(request, re_id, table_id):
@@ -301,8 +370,12 @@ def delete_tables(request, re_id, table_id):
     if request.method == 'POST':
         table = get_object_or_404(RentEstimate1, pk=table_id)
         table.delete()
+        rent_estimate2 = RentEstimate2.objects.filter(re_model=re_model).all()
+        rent_estimate2.delete()
+        re_model.is_filled = False
+        re_model.save()
         calculate_characteristics(tables1, characteristics_t1)
-        return HttpResponseRedirect(reverse('show-rent-estimates', args=(re_id,)))
+        return HttpResponseRedirect(reverse('show-rent-estimate1', args=(re_id,)))
 
     return render(request, 'main/delete_tables.html', {'re_model': re_model})
 

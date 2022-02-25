@@ -106,6 +106,7 @@ class TitleDocument(models.Model):
 
 class RentEstimateModel(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    is_filled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.task.title
@@ -132,3 +133,29 @@ class CharacteristicsRE1(models.Model):
     standard_deviation = models.FloatField(default=0)
     coefficient_variation = models.FloatField(default=0)
 
+
+class RentEstimate2(models.Model):
+    re_model = models.ForeignKey(RentEstimateModel, on_delete=models.CASCADE)
+    rent_estimate1 = models.ForeignKey(RentEstimate1, on_delete=models.CASCADE)
+    transferable_property_rights = models.CharField(max_length=100)
+    financing_conditions = models.CharField(max_length=100)
+    terms_of_sale = models.CharField(max_length=100)
+    price_change = models.CharField(max_length=100)
+    bargain_discount = models.CharField(max_length=50)
+    type_of_use = models.CharField(max_length=100)
+    locality_status = models.CharField(max_length=100)
+    location_within_city = models.CharField(max_length=100)
+    location_relative_to_red_line = models.CharField(max_length=100)
+    proximity_public_transport = models.CharField(max_length=100)
+    parking_type = models.CharField(max_length=100)
+    object_access = models.CharField(max_length=100)
+    area_category = models.CharField(max_length=50)
+    object_type = models.CharField(max_length=100)
+    level = models.CharField(max_length=50)
+    separate_entrance = models.CharField(max_length=50)
+    object_quality_class = models.CharField(max_length=100)
+    object_state = models.CharField(max_length=50)
+    finish_condition = models.CharField(max_length=50)
+    economic_characteristics = models.CharField(max_length=100)
+    movable_property = models.CharField(max_length=50)
+    other_characteristics = models.CharField(max_length=50)

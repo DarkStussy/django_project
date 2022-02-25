@@ -1,0 +1,466 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Оценка арендной платы{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <div class="btn-group" role="group">
+            <a style="font-family: 'JetBrains Mono'" href="{% url 'show-rent-estimate1' re_model.id %}"
+               class="btn btn-light">Таблица 1</a>
+            <a style="font-family: 'JetBrains Mono'" href="{% url 'show-rent-estimate2' re_model.id %}"
+               class="btn btn-light">Таблица 2</a>
+        </div>
+        <br><br>
+        <form method="post">
+            {% csrf_token %}
+            <table class="table table-dark table-hover table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Наименование</th>
+                    {% for table1 in tables1 %}
+                        <th scope="col">{{ forloop.counter }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Адрес</td>
+                    {% for table1 in tables1 %}
+                        <td>{{ table1.location }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Дата продажи (предложения)</td>
+                    {% for table1 in tables1 %}
+                        <td>{{ table1.date }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Условие продажи</td>
+                    {% for table1 in tables1 %}
+                        <td>Предложение</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Цена предложения (сделки), руб.</td>
+                    {% for table1 in tables1 %}
+                        <td>{{ table1.price }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Площадь помещений, кв. м</td>
+                    {% for table1 in tables1 %}
+                        <td>{{ table1.area }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Удельная цена (стр. е = стр. г / стр. д), руб./кв. м мес.</td>
+                    {% for table1 in tables1 %}
+                        <td>{{ table1.offer_price }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Элементы сравнения и корректировки:</td>
+                    {% for table1 in tables1 %}
+                        <td>-</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Передаваемые имущественные права</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.transferable_property_rights }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="t_p_rights{{ forloop.counter }}">
+                                    <option>Право собственности</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Условия финансирования</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.financing_conditions }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <input class="form-control" name="financing_conditions{{ forloop.counter }}"
+                                       value="рыночные" required/>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Условия продажи</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.terms_of_sale }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <input class="form-control" name="terms_of_sale{{ forloop.counter }}" value="рыночные"
+                                       required/>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan="{{ amount_tables1 }}">Условия рынка</td>
+                </tr>
+                <tr>
+                    <td>Изменение цен</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.price_change }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <input class="form-control" name="price_change{{ forloop.counter }}" value="отсутствуют"
+                                       required/>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Скидка на торг</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.bargain_discount }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <input class="form-control" name="bargain_discount{{ forloop.counter }}" value="имеется"
+                                       required/>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Вид использования</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.type_of_use }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <input class="form-control" name="type_of_use{{ forloop.counter }}" value="офисное"
+                                       required/>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan="{{ amount_tables1 }}">Местоположение</td>
+                </tr>
+                <tr>
+                    <td>Статус населённого пункта</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.locality_status }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="locality_status{{ forloop.counter }}">
+                                    <option>областной центр</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Местоположение в пределах города</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.location_within_city }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="location_within_city{{ forloop.counter }}">
+                                    <option>районы вокруг крупных промпредприятий</option>
+                                    <option>спальные мкр. среднеэтажной застройки</option>
+                                    <option>культурный и исторический центр</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Расположение относительно "красной линии"</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.location_relative_to_red_line }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="location_relative_to_red_line{{ forloop.counter }}">
+                                    <option>внутри квартала</option>
+                                    <option>на "красной линии"</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Близость к остановкам общественного транспорта</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.proximity_public_transport }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="proximity_public_transport{{ forloop.counter }}">
+                                    <option>на удалении от остановок</option>
+                                    <option>непосредственно у остановки</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Тип парковки</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.parking_type }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="parking_type{{ forloop.counter }}">
+                                    <option>организованная</option>
+                                    <option>стихийная</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Доступ к объекту</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.object_access }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="object_access{{ forloop.counter }}">
+                                    <option>свободный</option>
+                                    <option>закрытый</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td colspan="{{ amount_tables1 }}">Физические характеристики</td>
+                </tr>
+                <tr>
+                    <td>Фактор масштаба (общая площадь помещений), кв. м</td>
+                    {% for table1 in tables1 %}
+                        <td>
+                            {{ table1.area }}
+                        </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>- категория площади, кв. м</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.area_category }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="area_category{{ forloop.counter }}">
+                                    <option>50-100</option>
+                                    <option>< 50</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Тип объекта</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.object_type }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="object_type{{ forloop.counter }}">
+                                    <option>встроенное помещение</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Этаж расположения</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.level }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="level{{ forloop.counter }}">
+                                    <option>1 этаж</option>
+                                    <option>2 этаж</option>
+                                    <option>3 этаж</option>
+                                    <option>4 этаж</option>
+                                    <option>5 этаж</option>
+                                    <option>6 этаж</option>
+                                    <option>7 этаж</option>
+                                    <option>8 этаж</option>
+                                    <option>9 этаж</option>
+                                    <option>10 этаж</option>
+                                    <option>11 этаж</option>
+                                    <option>12 этаж</option>
+                                    <option>13 этаж</option>
+                                    <option>14 этаж</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Наличие отдельного входа</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.separate_entrance }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="separate_entrance{{ forloop.counter }}">
+                                    <option>имеется</option>
+                                    <option>отсутствует</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Класс качества объекта</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.object_quality_class }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="object_quality_class{{ forloop.counter }}">
+                                    <option>офисно торговый объект класса С и ниже</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Физическое состояние объекта</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.object_state }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="object_state{{ forloop.counter }}">
+                                    <option>отличное</option>
+                                    <option>хорошее</option>
+                                    <option>удовлетворительное</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Состояние отделки</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.finish_condition }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="finish_condition{{ forloop.counter }}">
+                                    <option>требуется косметический ремонт</option>
+                                    <option>в среднем состоянии</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Экономические характеристики</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.economic_characteristics }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="economic_characteristics{{ forloop.counter }}">
+                                    <option>не учитываются</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Наличие движимого имущества</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.movable_property }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="movable_property{{ forloop.counter }}">
+                                    <option>отсутствует</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Другие характеристики</td>
+                    {% if re_model.is_filled %}
+                        {% for table2 in tables2 %}
+                            <td>{{ table2.other_characteristics }}</td>
+                        {% endfor %}
+                    {% else %}
+                        {% for table1 in tables1 %}
+                            <td>
+                                <select class="form-select" name="other_characteristics{{ forloop.counter }}">
+                                    <option>не учитываются</option>
+                                </select>
+                            </td>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+                </tbody>
+            </table>
+            {% if not re_model.is_filled %}
+                <button type="submit" class="btn btn-success rounded">Сохранить</button>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

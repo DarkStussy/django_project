@@ -16,7 +16,8 @@ urlpatterns = [
     path('basicdata/', views.show_basic_data, name='show-basic-data'),
     path('basicdata/<int:d_id>/', views.detail_basic_data, name='detail-basic-data'),
     path('rentestimates/', views.main_rent_estimates, name='main-rent-estimates'),
-    path('rentestimates/<int:re_id>/', views.show_rent_estimates, name='show-rent-estimates'),
+    path('rentestimate1/<int:re_id>/', views.show_rent_estimate1, name='show-rent-estimate1'),
+    path('rentestimate2/<int:re_id>/', views.show_rent_estimate2, name='show-rent-estimate2'),
     path('rentestimates/delete/<int:re_id>/<int:table_id>/', views.delete_tables, name='delete-tables'),
 
     # auth

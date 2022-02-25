@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Profile, ProfileImage, Task, Doc, DocsImage, OtherDoc, ObjectDoc, CustomerDoc, BasicData, \
-    BasicDataModel, RentEstimateModel, RentEstimate1, CharacteristicsRE1
+    BasicDataModel, RentEstimateModel, RentEstimate1, CharacteristicsRE1, RentEstimate2
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -24,4 +24,5 @@ admin.site.register(BasicData)
 admin.site.register(BasicDataModel)
 admin.site.register(RentEstimateModel)
 admin.site.register(RentEstimate1)
+admin.site.register(RentEstimate2)
 admin.site.register(CharacteristicsRE1)

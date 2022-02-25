@@ -1,0 +1,118 @@
+{% extends 'main/base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Оценка арендной платы{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <div class="btn-group" role="group">
+            <a style="font-family: 'JetBrains Mono'" href="{% url 'show-rent-estimate1' re_model.id %}" class="btn btn-light">Таблица 1</a>
+            <a style="font-family: 'JetBrains Mono'" href="{% url 'show-rent-estimate2' re_model.id %}" class="btn btn-light">Таблица 2</a>
+        </div><br><br>
+        <form method="post">
+            {% csrf_token %}
+            <table class="table table-dark table-hover table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Адрес (местоположение)</th>
+                    <th scope="col">Общая площадь, кв. м</th>
+                    <th scope="col">Цена предложения, руб.</th>
+                    <th scope="col">Удельная цена предложения, руб.</th>
+                    <th scope="col">Источник информации (информационный ресурс)</th>
+                    <th scope="col">Дата размещения объявления</th>
+                    <th scope="col">Номер объявления</th>
+                    <th scope="col">Функции</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for table in tables1 %}
+                    <tr>
+                        <td>{{ table.location }}</td>
+                        <td>{{ table.area }}</td>
+                        <td>{{ table.price }}</td>
+                        <td>{{ table.offer_price }}</td>
+                        <td>{{ table.info_resource }}</td>
+                        <td>{{ table.date }}</td>
+                        <td>{{ table.ad_number }}</td>
+                        <td><a href="{% url 'delete-tables' re_model.id table.id %}" class="btn btn-danger rounded">Удалить</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td><input class="form-control tables" type="text" name="location" required/></td>
+                    <td><input class="form-control tables" type="number" name="area" step=any required/></td>
+                    <td><input class="form-control tables" type="number" name="price" step=any required/></td>
+                    <td></td>
+                    <td><input class="form-control tables" type="text" name="info_resource" required/></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <button type="submit" class="btn btn-success rounded">Сохранить</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8">Характеристика выборки удельных цен</td>
+                </tr>
+                <tr>
+                    <td colspan="3">Наименьшее</td>
+                    <td>{{ characteristics_t1.least_offer_price }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Наибольшее</td>
+                    <td>{{ characteristics_t1.greatest_offer_price }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Середина диапазона</td>
+                    <td>{{ characteristics_t1.mid_range }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Среднее</td>
+                    <td>{{ characteristics_t1.average }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Медиана</td>
+                    <td>{{ characteristics_t1.median }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Стандартное отклонение</td>
+                    <td>{{ characteristics_t1.standard_deviation }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3">Коэффициент вариации</td>
+                    <td>{{ characteristics_t1.coefficient_variation }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+{% endblock %}
