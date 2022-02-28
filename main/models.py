@@ -6,10 +6,18 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
+
 
 class ProfileImage(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='images/avatars/')
+
+    class Meta:
+        verbose_name = 'Изображение пользователя'
+        verbose_name_plural = 'Изображения пользователей'
 
 
 class Task(models.Model):
@@ -23,6 +31,10 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = 'Задачи'
+
 
 class Doc(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
@@ -30,6 +42,10 @@ class Doc(models.Model):
 
     def __str__(self):
         return self.task.title
+
+    class Meta:
+        verbose_name = 'Документы'
+        verbose_name_plural = 'Документы'
 
 
 class DocsImage(models.Model):
@@ -39,6 +55,10 @@ class DocsImage(models.Model):
     def __str__(self):
         return self.doc.task.title
 
+    class Meta:
+        verbose_name = 'Изображение документов'
+        verbose_name_plural = 'Изображения документов'
+
 
 class CustomerDoc(models.Model):
     doc = models.ForeignKey(Doc, on_delete=models.CASCADE)
@@ -46,6 +66,10 @@ class CustomerDoc(models.Model):
 
     def __str__(self):
         return self.doc.task.title
+
+    class Meta:
+        verbose_name = 'Документы заказчика'
+        verbose_name_plural = 'Документы заказчика'
 
 
 class OtherDoc(models.Model):
@@ -55,6 +79,10 @@ class OtherDoc(models.Model):
     def __str__(self):
         return self.doc.task.title
 
+    class Meta:
+        verbose_name = 'Иные заказчика'
+        verbose_name_plural = 'Иные заказчика'
+
 
 class ObjectDoc(models.Model):
     doc = models.ForeignKey(Doc, on_delete=models.CASCADE)
@@ -63,6 +91,10 @@ class ObjectDoc(models.Model):
     def __str__(self):
         return self.doc.task.title
 
+    class Meta:
+        verbose_name = 'Объекты-аналоги'
+        verbose_name_plural = 'Объекты-аналоги'
+
 
 class BasicDataModel(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
@@ -70,6 +102,10 @@ class BasicDataModel(models.Model):
 
     def __str__(self):
         return self.task.title
+
+    class Meta:
+        verbose_name = 'Модель основных данных'
+        verbose_name_plural = 'Модель основных данных'
 
 
 class BasicData(models.Model):
@@ -98,6 +134,10 @@ class BasicData(models.Model):
     location_ind = models.CharField(max_length=250, blank=True, null=True)
     documents = models.TextField()
 
+    class Meta:
+        verbose_name = 'Основные данные'
+        verbose_name_plural = 'Основные данные'
+
 
 class TitleDocument(models.Model):
     bd_model = models.ForeignKey(BasicData, on_delete=models.CASCADE)
@@ -111,6 +151,10 @@ class RentEstimateModel(models.Model):
     def __str__(self):
         return self.task.title
 
+    class Meta:
+        verbose_name = 'Модель таблиц'
+        verbose_name_plural = 'Модель таблицы'
+
 
 class RentEstimate1(models.Model):
     re_model = models.ForeignKey(RentEstimateModel, on_delete=models.CASCADE)
@@ -122,6 +166,10 @@ class RentEstimate1(models.Model):
     date = models.DateField()
     ad_number = models.CharField(max_length=100)
 
+    class Meta:
+        verbose_name = 'Таблица 1'
+        verbose_name_plural = 'Таблица 1'
+
 
 class CharacteristicsRE1(models.Model):
     re_model = models.ForeignKey(RentEstimateModel, on_delete=models.CASCADE)
@@ -132,6 +180,10 @@ class CharacteristicsRE1(models.Model):
     median = models.FloatField(default=0)
     standard_deviation = models.FloatField(default=0)
     coefficient_variation = models.FloatField(default=0)
+
+    class Meta:
+        verbose_name = 'Характеристики таблицы 1'
+        verbose_name_plural = 'Характеристики таблицы 1'
 
 
 class RentEstimate2(models.Model):
@@ -159,3 +211,7 @@ class RentEstimate2(models.Model):
     economic_characteristics = models.CharField(max_length=100)
     movable_property = models.CharField(max_length=50)
     other_characteristics = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = 'Таблица 2'
+        verbose_name_plural = 'Таблица 2'
