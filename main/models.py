@@ -80,8 +80,8 @@ class OtherDoc(models.Model):
         return self.doc.task.title
 
     class Meta:
-        verbose_name = 'Иные заказчика'
-        verbose_name_plural = 'Иные заказчика'
+        verbose_name = 'Иные документы'
+        verbose_name_plural = 'Иные документы'
 
 
 class ObjectDoc(models.Model):

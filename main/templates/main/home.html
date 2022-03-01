@@ -100,13 +100,13 @@
                                             <td>
                                                 <button type="button" class="btn btn-success rounded"
                                                         data-bs-toggle="modal"
-                                                        data-bs-target="#confirm{{ task.title }}">Выполнить
+                                                        data-bs-target="#confirm{{ task.id }}">Выполнить
                                                 </button>
                                             </td>
                                         {% endif %}
                                     </tr>
                                     {% if not task.user %}
-                                        <div class="modal fade" tabindex="-1" id="confirm{{ task.title }}"
+                                        <div class="modal fade" tabindex="-1" id="confirm{{ task.id }}"
                                              role="dialog">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content mod-cont">
